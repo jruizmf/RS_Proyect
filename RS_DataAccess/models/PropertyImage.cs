@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RS_DataAccess.models
 {
-    public class UserProfile : BaseEntity
+    public class PaymentMethods : BaseEntity
     {
         [ForeignKey("User")]
         public Guid UserId { get; set; }

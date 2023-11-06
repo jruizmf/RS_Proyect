@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RS_DataAccess.models
+namespace RS_BussinessLogic.models
 {
     public class Property : BaseEntity
     {

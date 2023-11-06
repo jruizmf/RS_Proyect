@@ -13,6 +13,15 @@ namespace RS_DataAccess
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<State> States { get; set; }
+
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<Suburbs> Suburbs { get; set; }
+
+        public virtual DbSet<Property> Properties { get; set; }
+        public virtual DbSet<PropertyImage> PropertyImages { get; set; }
+
 
     }
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using RS_DataAccess.models.common;
 
-namespace RS_DataAccess.models
+namespace RS_BussinessLogic.models
 {
     public class Municipality : BaseEntity
     {

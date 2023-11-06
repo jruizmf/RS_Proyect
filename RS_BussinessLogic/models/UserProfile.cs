@@ -4,27 +4,30 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RS_DataAccess.models
+namespace RS_BussinessLogic.models
 {
-    public class Property : BaseEntity
+    public class UserProfile : BaseEntity
     {
         [ForeignKey("User")]
         public Guid UserId { get; set; }
 
-        [Display(Name = "nombre")]
-        [Required(ErrorMessage = "El nombre es requerida.")]
+        [Display(Name = "Nombre")]
+        [Required(ErrorMessage = "El nombre de usuario es requerido.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "El nombre debería tener entre 3 y 50 caracteres.")]
-        public string Title { get; set; }
-        [Display(Name = "Descripción")]
-        [StringLength(200, ErrorMessage = "La descripción debería menos de 200 caracteres.")]
-        public string Description { get; set; }
+        public string Name { get; set; }
+        [Display(Name = "Apellido Paterno")]
+        [StringLength(50, ErrorMessage = "El apellido paterno debería menos de 50 caracteres.")]
+        public string Lastname { get; set; }
+        [Display(Name = "Apellido Materno")]
+        [StringLength(50, ErrorMessage = "El apellido materno debería menos de 50 caracteres.")]
+        public string Secondlastname { get; set; }
 
-        [Display(Name = "Tags")]
-        [StringLength(14, MinimumLength = 1)]
-        public string[] Tags { get; set; }
 
-        [Display(Name = "Precio")]
-        public float Price { get; set; }
+        [Display(Name = "Email")]
+        [RegularExpression("^[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)", ErrorMessage = "Email Invalido")]
+        [StringLength(80, ErrorMessage = "El Email debería menos de 50 caracteres.")]
+        public string Email { get; set; }
+
         [Display(Name = "RFC")]
         [RegularExpression("^([A-z]{4}[0-9]{6}[A-z0-9]{3})", ErrorMessage = "RFC Invalido")]
         [StringLength(14, MinimumLength = 1)]

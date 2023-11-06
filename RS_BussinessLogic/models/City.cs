@@ -6,16 +6,12 @@ using RS_DataAccess.models.common;
 
 namespace RS_DataAccess.models
 {
-    public class Municipality : BaseEntity
+    public class City : BaseEntity
     {
-        [ForeignKey("State")]
-        public Guid StateId { get; set; }
-
         [Required]
-        [Display(Name = "Municipio")]
-        [StringLength(80, ErrorMessage = "El Municipio debería menos de 80 caracteres.")]
+        [Display(Name = "Ciudad")]
+        [StringLength(80, ErrorMessage = "La Ciudad debería menos de 80 caracteres.")]
         public string Description { get; set; }
         public int Status { get; set; }
-        public virtual State State { get; protected set; }
     }
 }

@@ -12,7 +12,7 @@ namespace RS_DataAccess.models
         public Guid UserId { get; set; }
 
         [Display(Name = "Nombre")]
-        [Required(ErrorMessage = "El nombre de empleado es requerido.")]
+        [Required(ErrorMessage = "El nombre de usuario es requerido.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "El nombre debería tener entre 3 y 50 caracteres.")]
         public string Name { get; set; }
         [Display(Name = "Apellido Paterno")]
