@@ -1,140 +1,82 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MLGBussinesLogic.models.dto;
-using MLGBussinessLogic.helpers;
-using MLGBussinessLogic.interfaces;
-using MLGBussinessLogic.middleware;
-using MLGDataAccessLayer;
-using MLGDataAccessLayer.models;
+using RS_BussinessLogic.models.dto;
+using RS_BussinessLogic.helpers;
+using RS_BussinessLogic.interfaces;
+using RS_BussinessLogic.middleware;
+using RS_BussinessLogic;
+using RS_BussinessLogic.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RS_DataAccess;
+using RS_DataAccess.models;
 
-namespace MLGBussinessLogic.services
+namespace RS_BussinessLogic.services
 {
 
-    public class UsuarioClienteRepository : IUsuarioClienteRepository
+    public class UserProfileRepository : IUserProfileRepository
     {
         public readonly AppDBContext _dbcontext;
         private HashMiddleware _hashMiddleware;
-        public UsuarioClienteRepository(AppDBContext dbcontext, HashMiddleware hashMiddleware)
+        public UserProfileRepository(AppDBContext dbcontext, HashMiddleware hashMiddleware)
         {
             _dbcontext = dbcontext;
             _hashMiddleware = hashMiddleware;
         }
 
-        public async Task<List<UsuarioClienteModelo>> GetAll()
+        public async Task<List<UserProfile>> GetAll()
         {
-            var usuarioCliente = await _dbcontext.UsuarioClientes.Include(d => d.Usuario).Include(d => d.Cliente).ToListAsync<UsuarioClienteModelo>();
+            var usuarioCliente = await _dbcontext.UserProfiles.Include(d => d.User).ToListAsync<UserProfile>();
             return usuarioCliente;
         }
-        public async Task<UsuarioClienteModelo>GetOne(Guid Id)
+        public async Task<UserProfile>GetOne(Guid Id)
         {
-            var usuarioCliente = await _dbcontext.UsuarioClientes.Include(d => d.Usuario).Include(d => d.Cliente).Where(u => u.Id == Id).FirstOrDefaultAsync();
-            if (usuarioCliente == null) {
-                usuarioCliente = await _dbcontext.UsuarioClientes.Include(d => d.Usuario).Include(d => d.Cliente).Where(u => u.UsuarioId == Id).FirstOrDefaultAsync();
+            var _userProfile = await _dbcontext.UserProfiles.Include(d => d.User).Where(u => u.Id == Id).FirstOrDefaultAsync();
+            if (_userProfile == null) {
+                _userProfile = await _dbcontext.UserProfiles.Include(d => d.User).Where(u => u.User.Id == Id).FirstOrDefaultAsync();
             }
 
-            return usuarioCliente;
+            return _userProfile;
         }
 
-        public async Task<Guid> Add(UsuarioDto usuarioCliente)
+        public async Task<Guid> Add(UserProfile userProfile)
         {
-            
-            if (usuarioCliente.ClienteId == null)
-            {
-                var _cliente = new ClienteModelo() { Nombre = usuarioCliente.Nombre, Apellidos = usuarioCliente.Apellidos, Direccion = usuarioCliente.Direccion };
-
-                await _dbcontext.Clientes.AddAsync(_cliente);
-
-                usuarioCliente.ClienteId = _cliente.Id;
-            }
-            if (usuarioCliente.UsuarioId == null ) {
-               
-                byte[] passwordHash, passwordSalt;
-
-                _hashMiddleware.CreatePasswordHash(usuarioCliente.Password, out passwordHash, out passwordSalt);
-
-                UsuarioModelo _usuario = new UsuarioModelo()
-                {
-                    UsuarioNombre = usuarioCliente.UsuarioNombre,
-                };
-                _usuario.status = 1;
-                _usuario.password = passwordHash;
-                _usuario.PasswordSalt = passwordSalt;
-
-                await _dbcontext.Usuarios.AddAsync(_usuario);
-                usuarioCliente.UsuarioId = _usuario.Id;
-            }
-
-            _dbcontext.UsuarioClientes.Add(new UsuarioClienteModelo()
-            {
-                UsuarioId = usuarioCliente.UsuarioId.Value,
-                ClienteId = usuarioCliente.ClienteId.Value,
-                fecha = new DateTime()
-            });
+           
+            _dbcontext.UserProfiles.Add(userProfile);
             await _dbcontext.SaveChangesAsync();
 
-            return usuarioCliente.Id;
+            return userProfile.Id;
         }
-        public async Task<string> Update(Guid id, UsuarioDto usuarioCliente)
+        public async Task<string> Update(Guid id, UserProfile userProfile)
         {
-            var _usuarioCliente = await _dbcontext.UsuarioClientes.Where(u => u.Id == id).FirstOrDefaultAsync();
-            if (_usuarioCliente == null)
+            var _userProfile = await _dbcontext.UserProfiles.Where(u => u.Id == id).FirstOrDefaultAsync();
+            if (_userProfile == null)
                 throw new AppException("Usuario no encontrado");
 
-            if (usuarioCliente.ClienteId != null)
-            {
-                var _cliente = new ClienteModelo() { Nombre = usuarioCliente.Nombre, Apellidos = usuarioCliente.Apellidos, Direccion = usuarioCliente.Direccion };
-                _cliente.Id = usuarioCliente.ClienteId.Value;
+            _userProfile.AddressNumber = userProfile.AddressNumber;
+            _userProfile.AddressStreet = userProfile.AddressStreet;
+            _userProfile.AddressNeighborhood = userProfile.AddressNeighborhood;
+            _userProfile.ZIP = userProfile.ZIP;
+            _userProfile.CityId = userProfile.CityId;
+            _userProfile.StateId = userProfile.StateId;
+            _userProfile.CountryId = userProfile.CountryId;
+            _userProfile.Latitude = userProfile.Latitude;
+            _userProfile.MunicipalityId = userProfile.MunicipalityId;
+            _userProfile.Longitude = userProfile.Longitude;
 
-                _dbcontext.Clientes.Update(_cliente);
-            }
-            if (usuarioCliente.UsuarioId != null)
-            {
-                UsuarioModelo _usuario = new UsuarioModelo()
-                {
-                    Id = usuarioCliente.UsuarioId.Value,
-                    UsuarioNombre = usuarioCliente.UsuarioNombre,
-                };
-
-                if (!String.IsNullOrWhiteSpace(usuarioCliente.Password)) {
-                    byte[] passwordHash, passwordSalt;
-
-                    _hashMiddleware.CreatePasswordHash(usuarioCliente.Password, out passwordHash, out passwordSalt);
-
-
-                    _usuario.password = passwordHash;
-                    _usuario.PasswordSalt = passwordSalt;
-                }
-               
-                _usuario.status = 1;
-
-            }
             await _dbcontext.SaveChangesAsync();
-            return "Usuario modificado exitosamente";
+            return "Perfil modificado exitosamente";
         }
         public async Task<string> Delete(Guid id)
         {
-            var _usuarioClientes = _dbcontext.UsuarioClientes.Where(u => u.Id == id).FirstOrDefault();
-            if (_usuarioClientes == null)
+            var _userProfiles = _dbcontext.UserProfiles.Where(u => u.Id == id).FirstOrDefault();
+            if (_userProfiles == null)
             {
                 return "El usuario no existe";
             }
-            var _usuarios = _dbcontext.Usuarios.Where(u => u.Id == _usuarioClientes.UsuarioId).FirstOrDefault();
-            if (_usuarios == null)
-            {
-                return "El usuario no existe";
-            }
-            var _clientes = _dbcontext.Clientes.Where(u => u.Id == _usuarioClientes.ClienteId).FirstOrDefault();
-            if (_clientes == null)
-            {
-                return "El usuario no existe";
-            }
-            _dbcontext.UsuarioClientes.Remove(_usuarioClientes);
-            _dbcontext.Usuarios.Remove(_usuarios);
-            _dbcontext.Clientes.Remove(_clientes);
+            _dbcontext.UserProfiles.Remove(_userProfiles);
 
             await _dbcontext.SaveChangesAsync();
 

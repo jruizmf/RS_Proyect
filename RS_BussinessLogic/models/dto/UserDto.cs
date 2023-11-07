@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using RS_DataAccess.models;
 using RS_DataAccess.models.common;
 
-namespace RS_BussinessLogic.models
+namespace RS_BussinessLogic.models.dto
 {
-    public class User : BaseEntity
+    public class UserDto : BaseEntity
     {
         [Required]
 
@@ -14,7 +14,8 @@ namespace RS_BussinessLogic.models
         public string UserName { get; set; }
         [Required]
         public int Status { get; set; }
-        public byte[] Password { get; set; }
+        public string Password { get; set; }
+
         public byte[] PasswordSalt { get; set; }
 
         [StringLength(50)]
@@ -22,9 +23,7 @@ namespace RS_BussinessLogic.models
         [StringLength(50)]
         public string GoogleAuth { get; set; }
 
-        public UserProfile Profile { get; protected set; }
-
-
+        public UserProfile UserProfile { get; protected set; }
 
     }
 }

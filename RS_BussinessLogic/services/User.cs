@@ -9,96 +9,97 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RS_DataAccess;
+using RS_DataAccess.models;
+using RS_BussinessLogic.models.dto;
 
-namespace MLGBussinessLogic.services
+namespace RS_BussinessLogic.services
 {
 
     public class UserRepository : IUserRepository
     {
         public readonly AppDBContext _dbcontext;
         private HashMiddleware _hashMiddleware;
-        public UsuarioRepository(AppDBContext dbcontext, HashMiddleware hashMiddleware)
+        public UserRepository(AppDBContext dbcontext, HashMiddleware hashMiddleware)
         {
             _dbcontext = dbcontext;
             _hashMiddleware = hashMiddleware;
         }
 
-        public async Task<List<MLGDataAccessLayer.models.UsuarioModelo>> GetAll()
+        public async Task<List<User>> GetAll()
         {
-            var usuarios = await _dbcontext.Usuarios.ToListAsync<MLGDataAccessLayer.models.UsuarioModelo>();
+            var usuarios = await _dbcontext.Users.ToListAsync<User>();
             return usuarios;
         }
-        public async Task<MLGDataAccessLayer.models.UsuarioModelo> GetOne(Guid Id)
+        public async Task<User> GetOne(Guid Id)
         {
-            var usuarios = await _dbcontext.Usuarios.Where(u => u.Id == Id).FirstOrDefaultAsync();
+            var usuarios = await _dbcontext.Users.Where(u => u.Id == Id).FirstOrDefaultAsync();
             return usuarios;
         }
-        public async Task<Guid> Add(UsuarioModelo _usuario)
+        public async Task<string> Add(UserDto user)
         {
-            if (string.IsNullOrWhiteSpace(_usuario.password))
+            if (string.IsNullOrWhiteSpace(user.Password))
                 throw new AppException("la contraseña es requerida");
 
-            if (_dbcontext.Usuarios.Any(x => x.UsuarioNombre == _usuario.UsuarioNombre))
-                throw new AppException("El usuario: \"" + _usuario.UsuarioNombre + "\" ya ha sido utilizado");
+            if (_dbcontext.Users.Any(x => x.UserName == user.UserName))
+                throw new AppException("El usuario: \"" + user.UserName + "\" ya ha sido utilizado");
 
             byte[] passwordHash, passwordSalt;
 
-            _hashMiddleware.CreatePasswordHash(_usuario.password, out passwordHash, out passwordSalt);
+            _hashMiddleware.CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
 
-            MLGDataAccessLayer.models.UsuarioModelo usuario = new MLGDataAccessLayer.models.UsuarioModelo() { 
+            User _user = new User() { 
 
             };
-            usuario.UsuarioNombre = _usuario.UsuarioNombre;
-            usuario.status = 1;
-            usuario.password = passwordHash;
-            usuario.PasswordSalt = passwordSalt;
+            _user.UserName = user.UserName;
+            _user.Status = 1;
+            _user.Password = passwordHash;
 
-            _dbcontext.Usuarios.Add(usuario);
+            _dbcontext.Users.Add(_user);
             await _dbcontext.SaveChangesAsync();
 
 
-            return usuario.Id;
+            return user.Id.ToString();
         }
-        public async Task<string> Update(Guid id, UsuarioModelo usuario)
+        public async Task<string> Update(Guid id, UserDto user)
         {
-            var _usuario = await _dbcontext.Usuarios.Where(u => u.Id == id).FirstOrDefaultAsync();
-            if (_usuario == null)
+            var _user = await _dbcontext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+            if (_user == null)
                 throw new AppException("El usuario no existe");
 
 
             // update username if it has changed
-            if (!string.IsNullOrWhiteSpace(usuario.UsuarioNombre) && usuario.UsuarioNombre != _usuario.UsuarioNombre)
+            if (!string.IsNullOrWhiteSpace(user.UserName) && user.UserName != _user.UserName)
             {
                 // throw error if the new username is already taken
-                if (_dbcontext.Usuarios.Any(x => x.UsuarioNombre == usuario.UsuarioNombre))
-                    throw new AppException($"El usuario {usuario.UsuarioNombre} ya existe");
+                if (_dbcontext.Users.Any(x => x.UserName == user.UserName))
+                    throw new AppException($"El usuario {user.UserName} ya existe");
 
-                _usuario.UsuarioNombre = usuario.UsuarioNombre;
+                _user.UserName = user.UserName;
             }
 
             // update password if provided
-            if (!string.IsNullOrWhiteSpace(usuario.password))
+            if (!string.IsNullOrWhiteSpace(user.Password))
             {
                 byte[] passwordHash, passwordSalt;
-                _hashMiddleware.CreatePasswordHash(usuario.password, out passwordHash, out passwordSalt);
+                _hashMiddleware.CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
 
-                _usuario.password = passwordHash;
-                _usuario.PasswordSalt = passwordSalt;
+                _user.Password = passwordHash;
             }
 
-            _dbcontext.Usuarios.Update(_usuario);
+            _dbcontext.Users.Update(_user);
             _dbcontext.SaveChanges();
             await _dbcontext.SaveChangesAsync();
             return "Usuario modificado exitosamente";
         }
         public async Task<string> Delete(Guid id)
         {
-            var _usuario = _dbcontext.Usuarios.Where(empid => empid.Id == id).FirstOrDefault();
+            var _usuario = _dbcontext.Users.Where(empid => empid.Id == id).FirstOrDefault();
             if (_usuario == null)
             {
                 return "El usuario no existe";
             }
-            _dbcontext.Usuarios.Remove(_usuario);
+            _dbcontext.Users.Remove(_usuario);
 
             await _dbcontext.SaveChangesAsync();
 

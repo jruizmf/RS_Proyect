@@ -1,19 +1,20 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MLGBussinesLogic.interfaces;
-using MLGBussinesLogic.models.dto;
+using RS_BussinessLogic.interfaces;
+using RS_BussinessLogic.models.dto;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using MLGBussinessLogic.models.common;
+using RS_BussinessLogic.models.common;
 using System.Threading.Tasks;
-using MLGBussinesLogic.models;
+using RS_BussinessLogic.models;
 using Microsoft.Extensions.Configuration;
+using RS_DataAccess.models;
 
-namespace MLGBussinessLogic.middleware
+namespace RS_BussinessLogic.middleware
 {
     public class JwtMiddleware
     {
@@ -23,19 +24,18 @@ namespace MLGBussinessLogic.middleware
         {
             _config = config;
         }
-        public  TokenResultDto CreateToken(MLGDataAccessLayer.models.UsuarioModelo usuario) {
+        public TokenResultDto CreateToken(User user) {
 
-            if (usuario == null)
+            if (user == null)
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_config.GetValue<string>(
-                "JWT:secret"));
+            var key = Encoding.ASCII.GetBytes(_config[ "JWT:secret"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, usuario.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -45,10 +45,10 @@ namespace MLGBussinessLogic.middleware
 
             return new TokenResultDto
             {
-                Id = usuario.Id,
-                Cliente= usuario.UsuarioCliente,
-                Usuario = usuario.UsuarioNombre,
-                Status = usuario.status,
+                Id = user.Id,
+                Profile= user.UserProfile,
+                User = user.UserName,
+                Status = user.Status,
                 Token = tokenString
             };
         }

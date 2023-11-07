@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MLGBussinesLogic.interfaces;
-using MLGBussinesLogic.models.dto;
+using RS_BussinessLogic.interfaces;
+using RS_BussinessLogic.models.dto;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using MLGBussinessLogic.models.common;
+using RS_BussinessLogic.models.common;
 using System.Threading.Tasks;
 
-namespace MLGBussinessLogic.middleware
+namespace RS_BussinessLogic.middleware
 {
     public class HashMiddleware
     {

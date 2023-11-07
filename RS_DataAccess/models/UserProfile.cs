@@ -57,7 +57,16 @@ namespace RS_DataAccess.models
         [StringLength(8, MinimumLength = 1)]
         public string ZIP { get; set; }
 
+        [Display(Name = "Latitud")]
+        [StringLength(12, MinimumLength = 1)]
+        public string Latitude { get; set; }
 
+        [Display(Name = "Longitud")]
+        [StringLength(12, MinimumLength = 1)]
+        public string Longitude { get; set; }
+        [Display(Name = "Municipio")]
+        [ForeignKey("Municipality")]
+        public Guid MunicipalityId { get; set; }
         public User User { get; set; }
     }
 }

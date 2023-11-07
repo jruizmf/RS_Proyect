@@ -25,10 +25,10 @@ namespace RS_DataAccess.models
 
         [Display(Name = "Precio")]
         public float Price { get; set; }
-        [Display(Name = "RFC")]
-        [RegularExpression("^([A-z]{4}[0-9]{6}[A-z0-9]{3})", ErrorMessage = "RFC Invalido")]
-        [StringLength(14, MinimumLength = 1)]
-        public string RFC { get; set; }
+        [Display(Name = "Municipio")]
+        [ForeignKey("Municipality")]
+        public Guid MunicipalityId { get; set; }
+
 
         [Display(Name = "Estado")]
         [ForeignKey("State")]
@@ -53,8 +53,16 @@ namespace RS_DataAccess.models
         [Display(Name = "Código Postal")]
         [StringLength(8, MinimumLength = 1)]
         public string ZIP { get; set; }
+        [Display(Name = "Latitud")]
+        [StringLength(12, MinimumLength = 1)]
+        public string Latitude { get; set; }
+
+        [Display(Name = "Longitud")]
+        [StringLength(12, MinimumLength = 1)]
+        public string Longitude { get; set; }
 
 
         public User User { get; set; }
+        public ICollection<PropertyImage> PropertyImages { get; set; }
     }
 }

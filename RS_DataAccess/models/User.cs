@@ -15,16 +15,13 @@ namespace RS_DataAccess.models
         [Required]
         public int Status { get; set; }
         public byte[] Password { get; set; }
-        public byte[] PasswordSalt { get; set; }
+
 
         [StringLength(50)]
         public string FacebookAuth { get; set; }
         [StringLength(50)]
         public string GoogleAuth { get; set; }
 
-        public UserProfile Profile { get; protected set; }
-
-
-
+        public UserProfile UserProfile { get; protected set; }
     }
 }

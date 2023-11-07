@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace MLGBussinessLogic.helpers
+namespace RS_BussinessLogic.helpers
 {
     public class AppException : Exception
     {
